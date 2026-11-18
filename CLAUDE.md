@@ -129,6 +129,13 @@ higher-precedence thumbnail handler a user installs later (Acrobat at ext/ProgID
 over our `SystemFileAssociations` entry by design — we are a polite fallback, never a hijacker.
 The split lives in `crates/shell/src/register.rs` (`THUMB_EXTS` vs `PREVIEW_EXTS`).
 
+MSI: each extension's ShellEx components belong to their own optional feature
+(`Handler_AI/PSD/PSB/EPS/PDF/SVG`, Level 1 = default on, chosen in `installer/format-selection.wxs`);
+the DLLs, CLSIDs and PreviewHandlers entry stay in the hidden, always-installed `Complete`.
+Keep these feature IDs and component GUIDs stable: MSI migrates feature selections across
+upgrades by feature ID. Silent install: `ADDLOCAL=ALL REMOVE=Handler_SVG`. Validate with
+`installer/test-msi.ps1 -Msi <msi> [-BaselineMsi <previous release msi>]`.
+
 NEVER author, modify, or delete the `HKCR\AppID\{6d2b5079-...}` **key** itself — it is
 OS-owned and shared by every preview handler on the machine.
 
