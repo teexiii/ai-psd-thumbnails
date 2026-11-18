@@ -31,7 +31,9 @@ Output: `installer\ai-psd-thumbnails-0.4.0.msi`
 The MSI presents six checkboxes: AI, PSD, PSB, EPS, PDF and SVG. All are
 selected on a fresh installation. PDF registers thumbnails only, as before.
 The setup EXE shows this MSI dialog during interactive installation too.
-Use the MSI's **Change** maintenance option to change formats later.
+Use the MSI's **Change** maintenance option to change formats later. When installed
+via the setup EXE, the MSI's own Installed-apps entry is hidden: run the `.msi` again
+(or `msiexec /i ai-psd-thumbnails-<ver>.msi`) to reach Change.
 
 `Complete` retains the shared DLLs, COM classes and preview-handler enumeration.
 Each `Handler_<FORMAT>` feature owns only that extension's existing registry

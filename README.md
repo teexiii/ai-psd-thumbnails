@@ -48,6 +48,8 @@ Grab from [Releases](https://github.com/teexiii/ai-psd-thumbnails/releases):
 - **`ai-psd-thumbnails-<ver>.msi`** - the shell extension only (pick this if you don't care about preview-less EPS files, or already have Ghostscript).
 - **`ai-psd-thumbnails-setup-<ver>.exe`** - same MSI, plus offers to download & install official Ghostscript first when it's missing (needs internet during install).
 
+The installer lets you choose which formats to handle (all checked by default). Untick one to keep another thumbnail/preview provider you already use for it. Silent install: `msiexec /i ai-psd-thumbnails-<ver>.msi /qn ADDLOCAL=ALL REMOVE=Handler_SVG` (feature IDs: `Handler_AI`, `Handler_PSD`, `Handler_PSB`, `Handler_EPS`, `Handler_PDF`, `Handler_SVG`).
+
 After installing, thumbnails appear for newly viewed files. Files Explorer has already cached as "no thumbnail" need a cache clear (`scripts/clear-thumb-cache.ps1` from an elevated PowerShell) or simply copy/rename them once.
 
 ## What it never does

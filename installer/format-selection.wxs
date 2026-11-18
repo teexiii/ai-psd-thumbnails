@@ -40,14 +40,14 @@
 
       <Dialog Id="FormatsDlg" Width="370" Height="270" Title="[ProductName] Setup">
         <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}File format handlers" />
-        <Control Id="Description" Type="Text" X="20" Y="30" Width="330" Height="30" Text="Select the formats for Explorer thumbnails and previews. Clear SVG to keep your existing SVG provider." />
+        <Control Id="Description" Type="Text" X="20" Y="30" Width="330" Height="30" Text="Select the formats for Explorer thumbnails and previews. Clear a format to keep another installed provider for it." />
         <Control Id="AI" Type="CheckBox" X="25" Y="65" Width="315" Height="18" Property="FORMAT_AI" CheckBoxValue="1" Text="AI" />
         <Control Id="PSD" Type="CheckBox" X="25" Y="88" Width="315" Height="18" Property="FORMAT_PSD" CheckBoxValue="1" Text="PSD" />
         <Control Id="PSB" Type="CheckBox" X="25" Y="111" Width="315" Height="18" Property="FORMAT_PSB" CheckBoxValue="1" Text="PSB" />
         <Control Id="EPS" Type="CheckBox" X="25" Y="134" Width="315" Height="18" Property="FORMAT_EPS" CheckBoxValue="1" Text="EPS" />
         <Control Id="PDF" Type="CheckBox" X="25" Y="157" Width="315" Height="18" Property="FORMAT_PDF" CheckBoxValue="1" Text="PDF (thumbnails only)" />
         <Control Id="SVG" Type="CheckBox" X="25" Y="180" Width="315" Height="18" Property="FORMAT_SVG" CheckBoxValue="1" Text="SVG" />
-        <Control Id="Shared" Type="Text" X="20" Y="207" Width="330" Height="24" Text="The shared engine is always installed. Change these choices later using Modify in Windows Installed apps." />
+        <Control Id="Shared" Type="Text" X="20" Y="207" Width="330" Height="24" Text="The shared engine is always installed. To change these choices later, run the .msi again and pick Change." />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="WelcomeDlg" Condition="NOT Installed" />
