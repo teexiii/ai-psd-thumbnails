@@ -80,6 +80,7 @@ Write-Host "    installer-ca.exe  <- $CaExeSrc"
 $WxsSources = @(
     (Join-Path $PSScriptRoot "ai-psd-thumbnails.wxs")
     (Join-Path $PSScriptRoot "registry-shellex.wxs")
+    (Join-Path $PSScriptRoot "format-selection.wxs")
 )
 
 Write-Host "==> Building MSI: $MsiOut"
@@ -94,6 +95,7 @@ try {
         $WxsSources `
         -arch x64 `
         -ext WixToolset.Util.wixext `
+        -ext WixToolset.UI.wixext `
         -o $MsiOut
 
     if ($LASTEXITCODE -ne 0) {

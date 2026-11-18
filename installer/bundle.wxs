@@ -66,6 +66,7 @@
 
       <MsiPackage Id="ThumbViewerMsi"
           SourceFile="ai-psd-thumbnails-0.4.0.msi"
+          bal:DisplayInternalUICondition="WixBundleAction = 6"
           Vital="yes" />
     </Chain>
 

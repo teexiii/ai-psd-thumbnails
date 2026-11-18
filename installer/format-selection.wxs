@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <SetProperty Id="FORMAT_AI" Value="1" After="MigrateFeatureStates"
+                 Sequence="ui" Condition="&amp;Handler_AI = 3" />
+    <SetProperty Id="FORMAT_PSD" Value="1" After="SetFORMAT_AI"
+                 Sequence="ui" Condition="&amp;Handler_PSD = 3" />
+    <SetProperty Id="FORMAT_PSB" Value="1" After="SetFORMAT_PSD"
+                 Sequence="ui" Condition="&amp;Handler_PSB = 3" />
+    <SetProperty Id="FORMAT_EPS" Value="1" After="SetFORMAT_PSB"
+                 Sequence="ui" Condition="&amp;Handler_EPS = 3" />
+    <SetProperty Id="FORMAT_PDF" Value="1" After="SetFORMAT_EPS"
+                 Sequence="ui" Condition="&amp;Handler_PDF = 3" />
+    <SetProperty Id="FORMAT_SVG" Value="1" After="SetFORMAT_PDF"
+                 Sequence="ui" Condition="&amp;Handler_SVG = 3" />
+    <UI Id="FormatSelectionUI">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="FormatsDlg" Condition="NOT Installed" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Condition="Installed AND PATCH" />
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="FormatsDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="FormatsDlg" Order="1" Condition="NOT Installed OR WixUI_InstallMode = &quot;Change&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="2" Condition="Installed AND NOT PATCH AND WixUI_InstallMode &lt;&gt; &quot;Change&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="3" Condition="Installed AND PATCH" />
+
+      <Dialog Id="FormatsDlg" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}File format handlers" />
+        <Control Id="Description" Type="Text" X="20" Y="30" Width="330" Height="30" Text="Select the formats for Explorer thumbnails and previews. Clear SVG to keep your existing SVG provider." />
+        <Control Id="AI" Type="CheckBox" X="25" Y="65" Width="315" Height="18" Property="FORMAT_AI" CheckBoxValue="1" Text="AI" />
+        <Control Id="PSD" Type="CheckBox" X="25" Y="88" Width="315" Height="18" Property="FORMAT_PSD" CheckBoxValue="1" Text="PSD" />
+        <Control Id="PSB" Type="CheckBox" X="25" Y="111" Width="315" Height="18" Property="FORMAT_PSB" CheckBoxValue="1" Text="PSB" />
+        <Control Id="EPS" Type="CheckBox" X="25" Y="134" Width="315" Height="18" Property="FORMAT_EPS" CheckBoxValue="1" Text="EPS" />
+        <Control Id="PDF" Type="CheckBox" X="25" Y="157" Width="315" Height="18" Property="FORMAT_PDF" CheckBoxValue="1" Text="PDF (thumbnails only)" />
+        <Control Id="SVG" Type="CheckBox" X="25" Y="180" Width="315" Height="18" Property="FORMAT_SVG" CheckBoxValue="1" Text="SVG" />
+        <Control Id="Shared" Type="Text" X="20" Y="207" Width="330" Height="24" Text="The shared engine is always installed. Change these choices later using Modify in Windows Installed apps." />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="WelcomeDlg" Condition="NOT Installed" />
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg" Condition="Installed" />
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+          <Publish Event="AddLocal" Value="Handler_AI" Order="1" Condition="FORMAT_AI = &quot;1&quot;" />
+          <Publish Event="Remove" Value="Handler_AI" Order="2" Condition="NOT FORMAT_AI" />
+          <Publish Event="AddLocal" Value="Handler_PSD" Order="3" Condition="FORMAT_PSD = &quot;1&quot;" />
+          <Publish Event="Remove" Value="Handler_PSD" Order="4" Condition="NOT FORMAT_PSD" />
+          <Publish Event="AddLocal" Value="Handler_PSB" Order="5" Condition="FORMAT_PSB = &quot;1&quot;" />
+          <Publish Event="Remove" Value="Handler_PSB" Order="6" Condition="NOT FORMAT_PSB" />
+          <Publish Event="AddLocal" Value="Handler_EPS" Order="7" Condition="FORMAT_EPS = &quot;1&quot;" />
+          <Publish Event="Remove" Value="Handler_EPS" Order="8" Condition="NOT FORMAT_EPS" />
+          <Publish Event="AddLocal" Value="Handler_PDF" Order="9" Condition="FORMAT_PDF = &quot;1&quot;" />
+          <Publish Event="Remove" Value="Handler_PDF" Order="10" Condition="NOT FORMAT_PDF" />
+          <Publish Event="AddLocal" Value="Handler_SVG" Order="11" Condition="FORMAT_SVG = &quot;1&quot;" />
+          <Publish Event="Remove" Value="Handler_SVG" Order="12" Condition="NOT FORMAT_SVG" />
+          <Publish Event="NewDialog" Value="VerifyReadyDlg" Order="20" />
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+      </Dialog>
+    </UI>
+    <UIRef Id="WixUI_Common" />
+  </Fragment>
+</Wix>

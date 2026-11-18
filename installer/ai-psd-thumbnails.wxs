@@ -36,7 +36,8 @@
     -->
     <util:RestartResource Path="[INSTALLFOLDER]thumb_viewer.dll" />
 
-    <Feature Id="Complete" Title="ai-psd-thumbnails Shell Extension" Level="1">
+    <Feature Id="Complete" Title="ai-psd-thumbnails Shell Extension" Level="1"
+             Display="hidden" AllowAbsent="no" AllowAdvertise="no">
       <!-- File components -->
       <ComponentRef Id="CMP_ThumbViewerDll" />
       <ComponentRef Id="CMP_PdfiumDll" />
@@ -49,25 +50,46 @@
       <ComponentRef Id="CMP_RegClsidB_AppIdValue" />
       <ComponentRef Id="CMP_RegClsidB_DisplayName" />
 
-      <!-- Registry: per-extension SystemFileAssociations ShellEx (5 exts Ã— 2 handlers = 10) -->
-      <ComponentRef Id="CMP_RegShellEx_Ai_Thumb" />
-      <ComponentRef Id="CMP_RegShellEx_Ai_Preview" />
-      <ComponentRef Id="CMP_RegShellEx_Psd_Thumb" />
-      <ComponentRef Id="CMP_RegShellEx_Psd_Preview" />
-      <ComponentRef Id="CMP_RegShellEx_Psb_Thumb" />
-      <ComponentRef Id="CMP_RegShellEx_Psb_Preview" />
-      <ComponentRef Id="CMP_RegShellEx_Eps_Thumb" />
-      <ComponentRef Id="CMP_RegShellEx_Eps_Preview" />
-      <ComponentRef Id="CMP_RegShellEx_Svg_Thumb" />
-      <ComponentRef Id="CMP_RegShellEx_Svg_Preview" />
-      <ComponentRef Id="CMP_RegShellEx_Pdf_Thumb" />
-
       <!-- Registry: PreviewHandlers enumeration entry -->
       <ComponentRef Id="CMP_RegPreviewHandlers" />
 
       <!-- Installed-marker component (provides an uninstall-clean HKLM key) -->
       <ComponentRef Id="CMP_InstallMarker" />
     </Feature>
+
+    <!-- Stable feature IDs preserve choices across future major upgrades.
+         Keep existing registry component GUIDs and key paths unchanged. -->
+
+    <Feature Id="Handler_AI" Title="AI" Level="1" AllowAdvertise="no">
+      <ComponentRef Id="CMP_RegShellEx_Ai_Thumb" />
+      <ComponentRef Id="CMP_RegShellEx_Ai_Preview" />
+    </Feature>
+
+    <Feature Id="Handler_PSD" Title="PSD" Level="1" AllowAdvertise="no">
+      <ComponentRef Id="CMP_RegShellEx_Psd_Thumb" />
+      <ComponentRef Id="CMP_RegShellEx_Psd_Preview" />
+    </Feature>
+
+    <Feature Id="Handler_PSB" Title="PSB" Level="1" AllowAdvertise="no">
+      <ComponentRef Id="CMP_RegShellEx_Psb_Thumb" />
+      <ComponentRef Id="CMP_RegShellEx_Psb_Preview" />
+    </Feature>
+
+    <Feature Id="Handler_EPS" Title="EPS" Level="1" AllowAdvertise="no">
+      <ComponentRef Id="CMP_RegShellEx_Eps_Thumb" />
+      <ComponentRef Id="CMP_RegShellEx_Eps_Preview" />
+    </Feature>
+
+    <Feature Id="Handler_PDF" Title="PDF" Level="1" AllowAdvertise="no">
+      <ComponentRef Id="CMP_RegShellEx_Pdf_Thumb" />
+    </Feature>
+
+    <Feature Id="Handler_SVG" Title="SVG" Level="1" AllowAdvertise="no">
+      <ComponentRef Id="CMP_RegShellEx_Svg_Thumb" />
+      <ComponentRef Id="CMP_RegShellEx_Svg_Preview" />
+    </Feature>
+
+    <UIRef Id="FormatSelectionUI" />
 
     <!--
       Custom action: CA_RestoreAiProgId
@@ -76,7 +98,7 @@
                  which is required to write HKCR (= HKLM\SOFTWARE\Classes) on per-machine installs.
         Impersonate: no â€” stays as SYSTEM; needed to write per-machine HKCR\.ai.
         Return: check â€” non-zero exit aborts the install with an error.
-        Condition: NOT REMOVE â€” runs on install and repair, not on uninstall.
+        Condition: &amp;Handler_AI = 3: runs only when AI is selected locally.
         The exe reads HKCR\.ai default; if it equals "SageThumbsImage.ai" (SageThumbs leftover)
         it restores it to "Adobe.Illustrator.28". Any other value is left untouched.
         Per-user leftovers in HKCU\Software\Classes\.ai or FileExts\.ai\UserChoice are
@@ -92,7 +114,7 @@
                      receives it (silent no-op). Impersonation puts the CA in the user session.
         Return: ignore â€” notification is best-effort; a failed broadcast is non-fatal.
                 (asyncNoWait is unsupported for in-script CAs; ignore is the correct choice.)
-        Condition: NOT REMOVE â€” runs on install and upgrade, not on uninstall.
+        Condition: NOT UPGRADINGPRODUCTCODE: refreshes changes and final uninstall.
         Sequencing: Before="InstallFinalize" â€” commit CAs must be inside the
                     InstallInitialize..InstallFinalize window; After="InstallFinalize"
                     is illegal for in-script CAs (MSI error 2762).
@@ -121,7 +143,7 @@
         CA_RestoreAiProgId: deferred, elevated, after registry components are written
         (WriteRegistryValues) and before the transaction is finalised (InstallFinalize).
       -->
-      <Custom Action="CA_RestoreAiProgId" After="WriteRegistryValues" Condition="NOT REMOVE" />
+      <Custom Action="CA_RestoreAiProgId" After="WriteRegistryValues" Condition="&amp;Handler_AI = 3" />
 
       <!--
         CA_NotifyAssocChanged: commit, impersonated, sequenced BEFORE InstallFinalize.
@@ -132,7 +154,7 @@
         Return="ignore" â€” a missed notification is non-fatal; the host will refresh
         associations on next Explorer restart.
       -->
-      <Custom Action="CA_NotifyAssocChanged" Before="InstallFinalize" Condition="NOT REMOVE" />
+      <Custom Action="CA_NotifyAssocChanged" Before="InstallFinalize" Condition="NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
 
   </Package>
