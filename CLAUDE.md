@@ -41,7 +41,9 @@ cargo build -p ai-psd-thumbnails-core                  # decode lib only
 cargo build -p ai-psd-thumbnails-shell --release       # → target/release/thumb_viewer.dll
 ```
 
-Target: `x86_64-pc-windows-msvc` (x64 only). The shell crate links `exports.def` so the four
+Target: `x86_64-pc-windows-msvc` (x64 only). `.cargo/config.toml` links the MSVC CRT
+statically (`+crt-static`): without it the DLL and the CA exe import `VCRUNTIME140.dll`, and the
+MSI fails with 1603 on machines that lack the VC++ Redistributable. Keep it. The shell crate links `exports.def` so the four
 COM entry points (`DllGetClassObject`, `DllCanUnloadNow`, `DllRegisterServer`,
 `DllUnregisterServer`) export undecorated.
 
